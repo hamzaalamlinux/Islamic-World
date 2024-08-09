@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema({
     referredBy: { type: String },
     isApproved: { type: Boolean, default: false },
     registrationFee: { type: Number, default: 0 },
-    earnings: { type: Number, default: 0 }
+    earnings: { type: Number, default: 0 },
+    token: {
+        type: String,
+        select: false
+      },
 });
 
 module.exports = mongoose.model('User', userSchema);

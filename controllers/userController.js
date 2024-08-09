@@ -3,6 +3,8 @@ const Content = require('../models/Content');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const httpStatusCodes = require('../utils/httpStatusCodes');
+const { successResponse, errorResponse } = require('../utils/responseHandler');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -17,31 +19,33 @@ exports.signIn = async (req, res) => {
     const { email, password } = req.body;
     try {
         let user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
+        if (!user) return errorResponse(res, 'Email  Is Wrong',[], httpStatusCodes.BAD_REQUEST);
+
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: 'Invalid Credentials' });
+        if (!isMatch) return errorResponse(res, 'Password Is Wrong',[], httpStatusCodes.BAD_REQUEST);
 
         const payload = {
             user: {
                 id: user.id
             }
         };
-
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+        
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
             if (err) throw err;
-            res.json({ token });
-        });
+            user.token = token;
+            return successResponse(res, 'Success', user, httpStatusCodes.OK);
+          });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+      
+        return errorResponse(res, 'Something Went Wrong',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
 };
 exports.register = async (req, res) => {
     const { name, email, password, referralCode } = req.body;
     try {
         let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ msg: 'User already exists' });
+        if (user) return errorResponse(res, 'Email already exist!',[], httpStatusCodes.BAD_REQUEST);
 
         user = new User({
             name,
@@ -57,7 +61,7 @@ exports.register = async (req, res) => {
                 referrer.wallet += 100; // Increase referrer's wallet by $100
                 await referrer.save();
             } else {
-                return res.status(400).json({ msg: 'Invalid referral code' });
+                return errorResponse(res, 'Invalid referreral code',[], httpStatusCodes.BAD_REQUEST);
             }
         }
 
@@ -72,13 +76,13 @@ exports.register = async (req, res) => {
             }
         };
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
             if (err) throw err;
-            res.json({ token });
-        });
+            user.token = token;
+            return successResponse(res, 'User Register Successfully', user, httpStatusCodes.CREATED);
+          });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        return errorResponse(res, 'Something Went Wrong',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
 };
 exports.uploadContent = [upload.single('file'), async (req, res) => {
@@ -88,21 +92,25 @@ exports.uploadContent = [upload.single('file'), async (req, res) => {
             type: req.file.mimetype.split('/')[0],
             path: req.file.path
         });
+        
         await content.save();
-        res.json({ msg: 'Content uploaded' });
+        return successResponse(res, 'Content Uploaded Successfully', content, httpStatusCodes.CREATED);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        return errorResponse(res, 'Something Went Wrong',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
 }];
 
 exports.getWallet = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
-        res.json({ wallet: user.wallet });
+        if(!user){
+            return errorResponse(res, 'User Not Found!',[], httpStatusCodes.NOT_FOUND);
+        }
+        return successResponse(res, 'Success', user, httpStatusCodes.OK);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        return errorResponse(res, 'Something Went Wrong',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
 };
 
