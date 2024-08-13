@@ -1,10 +1,19 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const path = require('path');
+const cors = require("cors");
 
 require('dotenv').config();
 
 const app = express();
+const corsOptions = {
+    origin: '*', // Allow only this domain
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow cookies
+};
+
+app.use(cors(corsOptions));
 connectDB();
 
 app.use(express.json());
