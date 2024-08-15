@@ -8,7 +8,7 @@ require('dotenv').config();
 const app = express();
 const corsOptions = {
     origin: 'https://islamic-world-1.onrender.com', // Allow only this domain
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Allow cookies
 };
