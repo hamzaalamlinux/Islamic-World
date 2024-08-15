@@ -8,7 +8,7 @@ require('dotenv').config();
 const app = express();
 const corsOptions = {
     origin: '*', // Allow only this domain
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Allow cookies
 };
