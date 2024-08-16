@@ -9,7 +9,7 @@ const app = express();
 const corsOptions = {
     origin: '*', // Allow only this domain
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'x-auth-token'],
     credentials: true, // Allow cookies
 };
 
