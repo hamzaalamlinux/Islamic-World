@@ -29,29 +29,8 @@ exports.approveUser = async (req, res) => {
     }
 };
 
-exports.approveContent = async (req, res) => {
-    try {
-        const content = await Content.findById(req.params.id);
-        if (!content) return errorResponse(res, 'Content not found!',[], httpStatusCodes.NOT_FOUND);
-        content.isApproved = true;
-        await content.save();
-        return successResponse(res, 'Content Approved Successfully', content, httpStatusCodes.OK);
-    } catch (err) {
-        console.error(err.message);
-        return errorResponse(res, 'Something went wrong!',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
-    }
-};
 
-exports.getContentByUser = async (req, res) => {
-    try {
-        const content = await Content.find({ userId: req.params.id });
-        if (!content) return errorResponse(res, 'Content not found!',[], httpStatusCodes.NOT_FOUND);
-        return successResponse(res, 'Content Approved Successfully', content, httpStatusCodes.OK);
-    } catch (err) {
-        console.error(err.message);
-        return errorResponse(res, 'Something went wrong!',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
-    }
-};
+
 
 exports.sendMoney = async (req, res) => {
     try {
