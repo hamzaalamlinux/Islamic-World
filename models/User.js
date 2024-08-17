@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     wallet: { type: Number, default: 0 },
     role: { type: String, default: 'user' },
     referralCode: { type: String },
+    totalReferrals : {type : Number, default : 0},
     referredBy: { type: String },
     isApproved: { type: Boolean, default: false },
     registrationFee: { type: Number, default: 0 },
