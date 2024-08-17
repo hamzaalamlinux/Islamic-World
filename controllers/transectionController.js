@@ -2,6 +2,7 @@ const Transaction = require('../models/Transaction');
 const httpStatusCodes = require('../utils/httpStatusCodes');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 const UserAccounts = require('../models/UserAccounts');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Wallet = require('../models/Wallet');
 exports.createTransection = async (req, res) => {
@@ -11,14 +12,14 @@ exports.createTransection = async (req, res) => {
     session.startTransaction();
 
     try {
-        let user = await User.findOne({ userId }).session(session);
+        let user = await User.findById(userId).session(session);
         if (!user) {
             await session.abortTransaction();
             session.endSession();
             return errorResponse(res, 'User Not Found!', [], httpStatusCodes.NOT_FOUND);
         }
 
-        let wallet = await Wallet.findOne({ walletId }).session(session);
+        let wallet = await Wallet.findById(walletId).session(session);
         if (!wallet) {
             await session.abortTransaction();
             session.endSession();
@@ -27,9 +28,13 @@ exports.createTransection = async (req, res) => {
 
         let userAccounts = await UserAccounts.findOne({ userId: userId }).session(session);
         if (!userAccounts) {
-            await session.abortTransaction();
-            session.endSession();
-            return errorResponse(res, 'We dont have your bank information', [], httpStatusCodes.NOT_FOUND);
+            const accounts = new UserAccounts({
+                userId: userId,
+                accountNumber: accountNumber,
+                accountTitle: accountTitle,
+                bankName: bankname
+            });
+            await accounts.save({ session });
         }
 
         if (amount > wallet.balance) {
@@ -38,23 +43,15 @@ exports.createTransection = async (req, res) => {
             return errorResponse(res, 'Your amount exceeds your balance', [], httpStatusCodes.BAD_REQUEST);
         }
 
-        const accounts = new UserAccounts({
-            userId: userId,
-            accountNumber: accountNumber,
-            accountTitle: accountTitle,
-            bankName: bankname
-        });
-        await accounts.save({ session });
-
         const transaction = new Transaction({
             userId: userId,
             type: type,
             amount: amount,
             status: status,
             description: 'Referral bonus',
-            accountNumber: userAccounts.accountNumber,
-            accountTitle: userAccounts.accountTitle,
-            bankName: userAccounts.bankname
+            accountNumber: accountNumber,
+            accountTitle: accountTitle,
+            bankName: bankname
         });
         await transaction.save({ session });
 
@@ -64,17 +61,18 @@ exports.createTransection = async (req, res) => {
         await session.commitTransaction();
         session.endSession();
 
-        return successResponse(res, 'Transaction request submitted successfully!', user, httpStatusCodes.CREATED);
+        return successResponse(res, 'Transaction request submitted successfully!', transaction, httpStatusCodes.CREATED);
     } catch (err) {
         await session.abortTransaction();
         session.endSession();
+        console.log(err);
         return errorResponse(res, 'Something Went Wrong', [], httpStatusCodes.INTERNAL_SERVER_ERROR);
     }
 };
 
 exports.getTransectionsForAdmin = async(req, res) => {
     try{
-        let transection = await Transaction.find();
+        let transection = await Transaction.find().populate('userId');
         if(!transection){
             return errorResponse(res, 'No Transections Found!',[], httpStatusCodes.BAD_REQUEST);
         }
@@ -86,9 +84,9 @@ exports.getTransectionsForAdmin = async(req, res) => {
 };
 
 exports.getTransectionsForUser = async(req, res) => {
-    const {userId } = req.body;
+  
     try{
-        let transection = await Transaction.findOne({ userId: userId});
+        let transection = await Transaction.find({ userId: req.user.id});
         if(!transection){
             return errorResponse(res, 'No Transections Found!',[], httpStatusCodes.BAD_REQUEST);
         }
@@ -100,11 +98,11 @@ exports.getTransectionsForUser = async(req, res) => {
 };
 
 exports.ApproveTransection = async(req, res) => {
-    const {userId, status } = req.body;
+    const {status, transectionId } = req.body;
     try {
-        let transection = await Transaction.findOne({ userId: userId});
+        let transection = await Transaction.findById(transectionId);
         transection.status = status;
-        transection.updatedAt = Date.now;
+        transection.updatedAt = Date.now();
         transection.save();
         if(!transection){
             return errorResponse(res, 'No Transections Found!',[], httpStatusCodes.BAD_REQUEST);

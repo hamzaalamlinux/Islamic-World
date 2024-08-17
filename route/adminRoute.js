@@ -7,10 +7,9 @@ const contentController = require('../controllers/ContentController');
 // Assuming there's an admin check middleware, add it to routes requiring admin access
 router.get('/users', auth, adminController.getUsers);
 router.put('/approve-user/:id', auth, adminController.approveUser);
-router.get('/get-content/:id', auth, adminController.getContentByUser);
 router.post('/send-money/:id', auth, adminController.sendMoney);
 router.get('/get-transection', auth,transectionController.getTransectionsForAdmin);
-router.get('/approve-transection', auth, transectionController.ApproveTransection);
+router.post('/approve-transection', auth, transectionController.ApproveTransection);
 router.get('/get-content/:id', auth, contentController.getContentForAdmin);
 router.put('/approve-content/:id', auth, contentController.approveContent);
 

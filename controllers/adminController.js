@@ -8,7 +8,7 @@ exports.getUsers = async (req, res) => {
         if(!users){
             return errorResponse(res, 'User Not Found!',[], httpStatusCodes.NOT_FOUND);
         }
-        return successResponse(res, 'Success', user, httpStatusCodes.OK);
+        return successResponse(res, 'Success', users, httpStatusCodes.OK);
     } catch (err) {
         console.error(err.message);
         return errorResponse(res, 'Something went wrong!',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
