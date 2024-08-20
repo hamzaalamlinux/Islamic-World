@@ -10,7 +10,7 @@ router.put('/approve-user/:id', auth, adminController.approveUser);
 router.post('/send-money/:id', auth, adminController.sendMoney);
 router.get('/get-transection', auth,transectionController.getTransectionsForAdmin);
 router.post('/approve-transection', auth, transectionController.ApproveTransection);
-router.get('/get-content/:id', auth, contentController.getContentForAdmin);
+router.get('/get-content', auth, contentController.getContentForAdmin);
 router.put('/approve-content/:id', auth, contentController.approveContent);
 
 
