@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
     session.startTransaction();
 
     try {
-        const { name, email, password, referralCode } = req.body;
+        const { name, email, password, referralCode, role } = req.body;
         let user = await User.findOne({ email });
 
         if (user) {
@@ -61,6 +61,7 @@ exports.register = async (req, res) => {
             name,
             email,
             password,
+            role : role,
             referralCode: generateReferralCode(), // Generate a unique referral code for the new user
         });
 
