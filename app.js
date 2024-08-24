@@ -21,7 +21,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/users', require('./route/userRoutes'));
 app.use('/api/admin', require('./route/adminRoute'));
-app.use('api/web', require('./route/webRoute'));
+app.use('/api/web', require('./route/webRoute'));
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
