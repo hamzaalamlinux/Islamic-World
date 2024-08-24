@@ -28,7 +28,16 @@ exports.getContentForUser = async(req, res) => {
 };
 
 
-
+exports.getContentForWeb = async (req, res) => {
+    try {
+        const content = await Content.find().populate('userId').sort({ _id: -1 });
+        if (!content) return errorResponse(res, '',[], httpStatusCodes.OK);
+        return successResponse(res, 'Success', content, httpStatusCodes.OK);
+    } catch (err) {
+        console.error(err.message);
+        return errorResponse(res, 'Something went wrong!',[], httpStatusCodes.INTERNAL_SERVER_ERROR);
+    }
+};
 
 exports.approveContent = async (req, res) => {
     try {
