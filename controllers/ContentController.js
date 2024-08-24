@@ -9,7 +9,7 @@ const Content = require('../models/Content');
 
 exports.getContentForAdmin = async (req, res) => {
     try {
-        const content = await Content.find().sort({ _id: -1 });
+        const content = await Content.find().populate('userId').sort({ _id: -1 });
         
         if (!content) return errorResponse(res, '',[], httpStatusCodes.OK);
         return successResponse(res, 'Success', content, httpStatusCodes.OK);
@@ -20,7 +20,7 @@ exports.getContentForAdmin = async (req, res) => {
 };
 exports.getContentForUser = async(req, res) => {
     const { userId } = req.body;
-    let content = await Content.find( { userId: userId});
+    let content = await Content.find( { userId: userId}).populate('userId');
     if (!content) {
         return errorResponse(res, 'Content Not Found!', [], httpStatusCodes.BAD_REQUEST);
     }
@@ -32,7 +32,7 @@ exports.getContentForUser = async(req, res) => {
 
 exports.approveContent = async (req, res) => {
     try {
-        const content = await Content.findById(req.params.id);
+        const content = await Content.findById(req.params.id).populate('userId');
         if (!content) return errorResponse(res, 'Content not found!',[], httpStatusCodes.NOT_FOUND);
         content.isApproved = true;
         await content.save();
