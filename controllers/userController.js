@@ -27,6 +27,9 @@ exports.signIn = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return errorResponse(res, 'Password Is Wrong',[], httpStatusCodes.BAD_REQUEST);
 
+        if(user.isApproved == false){
+            return errorResponse(res, 'User Not Approved', [], httpStatusCodes.UNAUTHORIZED);
+        }
         const payload = {
             user: {
                 id: user.id
@@ -50,9 +53,7 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password, referralCode, role } = req.body;
         let user = await User.findOne({ email });
-        if(user.isApproved == false){
-            return errorResponse(res, 'User Not Approved', [], httpStatusCodes.BAD_REQUEST);
-        }
+       
         if (user) {
             await session.abortTransaction();
             session.endSession();
