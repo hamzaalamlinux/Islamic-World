@@ -50,7 +50,9 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password, referralCode, role } = req.body;
         let user = await User.findOne({ email });
-
+        if(user.isApproved == false){
+            return errorResponse(res, 'User Not Approved', [], httpStatusCodes.BAD_REQUEST);
+        }
         if (user) {
             await session.abortTransaction();
             session.endSession();
