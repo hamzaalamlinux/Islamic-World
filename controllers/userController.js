@@ -22,12 +22,13 @@ exports.signIn = async (req, res) => {
     const { email, password } = req.body;
     try {
         let user = await User.findOne({ email });
+        
         if (!user) return errorResponse(res, 'Email  Is Wrong',[], httpStatusCodes.BAD_REQUEST);
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return errorResponse(res, 'Password Is Wrong',[], httpStatusCodes.BAD_REQUEST);
 
-        if(user.isApproved == false){
+        if(user.isApproved == false && user.role != "admin"){
             return errorResponse(res, 'User Not Approved', [], httpStatusCodes.UNAUTHORIZED);
         }
         const payload = {
