@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema({
     isApproved: { type: Boolean, default: false },
     registrationFee: { type: Number, default: 0 },
     earnings: { type: Number, default: 0 },
+    resetPasswordToken : {type : String},
+    resetPasswordExpire : {type : Number},
     token: {
         type: String,
         select: false
