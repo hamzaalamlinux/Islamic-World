@@ -13,6 +13,6 @@ router.get('/get-transection', auth,transectionController.getTransectionsForAdmi
 router.post('/approve-transection', auth, transectionController.ApproveTransection);
 router.get('/get-content', auth, contentController.getContentForAdmin);
 router.put('/approve-content/:id', auth, contentController.approveContent);
-router.get("/get-analytics" ,adminController.analytics);
+router.get("/get-analytics", auth ,adminController.analytics);
 router.put("/update-profile", auth ,ProfileController.updateProfile);
 module.exports = router;
