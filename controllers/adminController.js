@@ -71,19 +71,20 @@ exports.analytics = async (req, res) => {
         const totalUsers = await User.countDocuments();
 
         // Get the total number of pending transactions
-        const totalPendingTransactions = await Transaction.countDocuments({ status: 'pending' });
+        const incoming = await Transaction.countDocuments({ status: 'pending' });
         // Get the total number of approve transactions
-        const totalApproveTransactions = await Transaction.countDocuments({ status: 'completed' });
+        const outgoing = await Transaction.countDocuments({ status: 'completed' });
 
-        const difference = totalPendingTransactions - totalApprovedTransactions;
+        const clearence = Math.abs(incoming - outgoing);
+
 
 
         // Return the counts in the response
         return successResponse(res, 'Analytics fetched successfully', {
             totalUsers,
-            totalPendingTransactions,
-            totalApproveTransactions,
-            difference
+            incoming,
+            outgoing,
+            clearence
         }, httpStatusCodes.OK);
     } catch (err) {
         console.error(err.message);
