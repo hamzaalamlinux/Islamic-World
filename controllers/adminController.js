@@ -75,7 +75,7 @@ exports.analytics = async (req, res) => {
         // Get the total number of approve transactions
         const outgoing = await Transaction.countDocuments({ status: 'completed' });
 
-        const clearence = Math.abs(incoming - outgoing);
+        const balance = Math.abs(incoming - outgoing);
 
 
 
@@ -84,7 +84,7 @@ exports.analytics = async (req, res) => {
             totalUsers,
             incoming,
             outgoing,
-            clearence
+            balance
         }, httpStatusCodes.OK);
     } catch (err) {
         console.error(err.message);
