@@ -167,11 +167,12 @@ exports.register = async (req, res) => {
 
 exports.uploadContent = [upload.single('file'), async (req, res) => {
     try {
+       
         const content = new Content({
             userId: req.user.id,
             type: req.file.mimetype.split('/')[0],
             path: req.file.path,
-            description : req.description
+            description : req.body.description
         });
         
         await content.save();

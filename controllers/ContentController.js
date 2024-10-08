@@ -41,7 +41,7 @@ exports.getContentForAdmin = async (req, res) => {
 };
 
 exports.getContentForUser = async(req, res) => {
-    const { userId } = req.body;
+    const  userId  = req.params.id;
     let content = await Content.find( { userId: userId}).populate('userId');
     if (!content) {
         return errorResponse(res, 'Content Not Found!', [], httpStatusCodes.BAD_REQUEST);
