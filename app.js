@@ -24,5 +24,5 @@ app.use('/api/admin', require('./route/adminRoute'));
 app.use('/api/web', require('./route/webRoute'));
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

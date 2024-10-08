@@ -8,15 +8,13 @@ exports.updateProfile = async (req, res) => {
     const { name, email, password, referralCode, role } = req.body;
 
     try {
-        // Find the user by email
         let user = await User.findOne({ email });
-
         if (!user) {
             return errorResponse(res, 'User not found', [], httpStatusCodes.NOT_FOUND);
         }
 
-        // Update user fields if they are provided
         if (name) user.name = name;
+        
         if (password) {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
